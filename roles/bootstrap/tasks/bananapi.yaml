@@ -1,0 +1,44 @@
+---
+- name: "Remove pi password"
+  user: name='pi' password='!'
+
+- name: "Remove root password"
+  user: name="root" password="!"
+
+- name: "remove unwanted packages"
+  package:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - wireless-tools
+    - libiw30
+    - wpasupplicant
+    - bluez
+    - bluez-firmware
+    - cifs-utils
+    - libtalloc2
+    - libwbclient0
+    - samba-common
+    - dhcpcd5
+
+- name: adding parted
+  package:
+    name: parted
+    state: present
+
+- name: "Remove ssh HOST keys"
+  file: "path=/etc/ssh/{{ item }} state=absent"
+  with_items:
+    - ssh_host_dsa_key
+    - ssh_host_dsa_key.pub
+    - ssh_host_ecdsa_key
+    - ssh_host_ecdsa_key.pub
+    - ssh_host_ed25519_key
+    - ssh_host_ed25519_key.pub
+    - ssh_host_rsa_key
+    - ssh_host_rsa_key.pub
+  when: regenerate_ssh_keys
+
+- name: "Generate new ssh HOST keys"
+  shell: "dpkg-reconfigure openssh-server"
+  when: regenerate_ssh_keys

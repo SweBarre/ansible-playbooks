@@ -1,0 +1,66 @@
+---
+- name: Removing conflicting packages
+  package:
+    name="{{ item }}"
+    state=absent
+  with_items:
+    - docker
+    - docker-engine-cs
+    - docker.io
+    - lxc-docker
+    - lxc-docker-virtual-package
+
+- name: installing dependencies
+  package:
+    name="{{ item }}"
+    state=present
+  with_items:
+    - iptables
+    - init-system-helpers
+    - libapparmor1
+    - libc6
+    - libdevmapper1.02.1
+
+- name: installing recommends
+  package:
+    name="{{ item }}"
+    state=present
+  with_items:
+    - aufs-tools
+    - ca-certificates
+    - cgroupfs-mount
+    - git
+    - xz-utils
+
+- name: Check if docker is installed
+  command: systemctl start docker.service
+  ignore_errors: yes
+  changed_when: false
+  register: service_docker_status
+
+- name: Copy docker package
+  copy:
+    src=docker-engine_1.12.1-0~jessie_armhf.deb
+    dest=/tmp/docker-engine_1.12.1-0~jessie_armhf.deb
+    owner=root
+    group=root
+    mode=0644
+  when: service_docker_status | failed
+
+- name: Install docker package
+  command: dpkg -i /tmp/docker-engine_1.12.1-0~jessie_armhf.deb
+  when: service_docker_status | failed
+
+- name: Configure docker service
+  service:
+    name=docker
+    state=started
+    enabled=yes
+
+- name: Adding users to docker group
+  user:
+    name="{{ item }}"
+    groups=docker
+    append=yes
+  with_items: "{{ docker_users }}"
+  

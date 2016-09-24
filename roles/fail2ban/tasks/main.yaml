@@ -1,0 +1,38 @@
+---
+- name: install fail2ban
+  package:
+    name=fail2ban
+    state=present
+
+- name: checking fail2ban.conf
+  copy:
+    src=fail2ban.conf
+    dest=/etc/fail2ban/fail2ban.conf
+    owner=root
+    group=root
+    mode=0644
+  notify: reload fail2ban
+
+- name: checking fail2ban jail
+  copy:
+    src=fail2ban.jail
+    dest=/etc/fail2ban/jail.d/fail2ban.conf
+    owner=root
+    group=root
+    mode=0644
+  notify: reload fail2ban
+
+- name: checking fail2ban filter
+  copy:
+    src=fail2ban.filter
+    dest=/etc/fail2ban/filter.d/fail2ban.conf
+    owner=root
+    group=root
+    mode=0644
+  notify: reload fail2ban
+
+- name: start fail2ban service
+  service:
+    name=fail2ban
+    state=started
+    enabled=yes

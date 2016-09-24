@@ -1,0 +1,9 @@
+---
+- name: installing rkhunter 
+  package:
+    name="{{ item }}"
+    state=present
+  with_items:
+    - unhide
+    - unhide.rb
+    - rkhunter

@@ -1,0 +1,57 @@
+# {{ ansible_managed }}
+# What ports, IPs and protocols we listen for
+Port 22
+Protocol 2
+
+# HostKeys for protocol version 2
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+{% if ssh_ed25519_cert_bool %}
+HostCertificate /etc/ssh/ssh_host_ed25519_key-cert.pub
+{% endif %}
+
+#Privilege Separation is turned on for security
+UsePrivilegeSeparation yes
+
+# Logging
+SyslogFacility AUTH
+LogLevel VERBOSE
+
+# Skip PTR comparison, etc
+UseDNS no
+
+# Stricter crypto settings
+KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-ripemd160-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,hmac-ripemd160,umac-128@openssh.com
+
+# Authentication:
+LoginGraceTime 120
+PermitRootLogin no
+StrictModes yes
+
+PubkeyAuthentication yes
+AuthorizedKeysFile %h/.ssh/authorized_keys
+HostbasedAuthentication no
+PermitEmptyPasswords no
+
+ChallengeResponseAuthentication no
+PasswordAuthentication no
+UsePAM yes
+
+# Kerberos options
+KerberosAuthentication no
+GSSAPIAuthentication no
+
+X11Forwarding yes
+X11DisplayOffset 10
+PrintMotd no
+PrintLastLog yes
+TCPKeepAlive yes
+UseLogin no
+
+# Allow client to pass locale environment variables
+AcceptEnv LANG LC_*
+Subsystem sftp /usr/lib/openssh/sftp-server
+
+AllowGroups sshusers

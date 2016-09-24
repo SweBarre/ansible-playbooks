@@ -1,0 +1,20 @@
+#!/bin/bash
+
+LED=/sys/class/leds/bananapi\:green\:usr/brightness
+
+function cleanup {
+  echo 0 > $LED
+  exit
+}
+
+trap cleanup SIGHUP SIGINT SIGTERM
+
+while true
+do
+  echo 1 >  $LED
+  sleep 0.5
+  echo 0 > $LED
+  sleep 0.5
+done
+
+cleanup

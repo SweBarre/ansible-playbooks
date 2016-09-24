@@ -1,0 +1,16 @@
+---
+
+- name: generate timezone
+  command: /usr/sbin/dpkg-reconfigure --frontend noninteractive tzdata
+
+- name: reload input
+  command: /sbin/udevadm trigger --subsystem-match=input --action=change
+
+- name: set timezone
+  command: "timedatectl set-timezone {{ time_zone }}"
+
+- name: do daemon-reload
+  command: /bin/systemctl daemon-reload
+
+- name: reload motd
+  command: /usr/sbin/update-motd

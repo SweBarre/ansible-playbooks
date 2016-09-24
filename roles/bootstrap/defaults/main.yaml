@@ -1,0 +1,4 @@
+---
+reboot: True
+fetch_dir: ~/.fetch
+regenerate_ssh_keys: False

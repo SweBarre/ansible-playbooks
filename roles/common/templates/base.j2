@@ -1,0 +1,12 @@
+# base {{ ansible_managed }}
+{% if domain_name is defined %}
+domain {{ domain_name }}
+{% endif %}
+{% if search_domain is defined %}
+search {{ search_domain }}
+{% endif %}
+{% if common_nameservers is defined %}
+{% for nameserver in common_nameservers %}
+nameserver {{ nameserver }}
+{% endfor %}
+{% endif %}

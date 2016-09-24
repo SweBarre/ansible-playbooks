@@ -1,0 +1,31 @@
+---
+- name: making sure ntp is not installed
+  package:
+    name=ntp
+    state=absent
+
+- name: configure timesyncd.conf
+  template:
+    src=timesyncd.conf.j2
+    dest=/etc/systemd/timesyncd.conf
+    owner=root
+    group=root
+    mode=0644
+  notify: enable ntp
+  register: config
+
+- name: run daemon-reload
+  command: systemctl daemon-reload
+  when: config.changed
+
+- name: reload timesyncd
+  service:
+    name=systemd-timesyncd
+    state=restarted
+  when: config.changed
+
+- name: Enable and run timesyncd
+  service:
+    name=systemd-timesyncd
+    state=started
+    enabled=yes

@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+
+[Time]
+{% if ntp_servers is defined %}
+NTP={% for server in ntp_servers %}{{ server }} {% endfor %}
+{% endif %}

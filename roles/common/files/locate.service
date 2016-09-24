@@ -1,0 +1,9 @@
+[Unit]
+Description=blinking the diode on BananaPi
+           
+[Service]
+Type=simple
+ExecStart=/usr/bin/locate_banana_pi
+
+[Install]
+WantedBy=multi-user.target

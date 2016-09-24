@@ -1,0 +1,70 @@
+---
+
+- name: Install common packages
+  package:
+    name="{{ item }}"
+    state=present
+  with_items:
+    - resolvconf
+
+- name: Create Ansible system user
+  user:
+    name=ansible
+    state=present
+    home=/home/ansible
+    shell=/bin/bash
+
+- name: Securing ansible home directory
+  file:
+    path=/home/ansible
+    state=directory
+    group=ansible
+    owner=ansible
+    mode=0750
+
+- name: Create /home/ansible/.ssh
+  file:
+    path=/home/ansible/.ssh
+    state=directory
+    owner=ansible
+    group=ansible
+    mode=0750
+
+- name: copying ansible authorized key
+  authorized_key:
+    user: ansible
+    key: "{{ lookup('file', '~/.ssh/ansible_id_ed25519.pub') }}"
+
+- name: Adding ansible sudo rule
+  copy:
+    src="ansible_sudo_rule"
+    dest=/etc/sudoers.d/ansible
+    owner=root
+    group=root
+    mode=0440
+
+- name: Running specific Banana-Pi M1 setup tasks
+  include: bananapi.yaml
+  when: "'banana-pi' in group_names"
+
+- name: Running specific Rasbian-PI setup tasks
+  include: bananapi.yaml
+  when: "'raspberry-pi' in group_names"
+
+- name: making sure public key fetch dir is created
+  local_action: file path={{ fetch_dir }} state=directory
+  become: false
+
+- name: "Fetch public host key"
+  fetch:
+    src=/etc/ssh/ssh_host_ed25519_key.pub
+    dest="{{ fetch_dir }}/{{ ansible_host }}_ssh_host_ed25519_key.pub"
+    flat=yes
+  tags: fetch_ssh_pub
+
+- name: restart machine
+  shell: sleep 2 && systemctl reboot
+  async: 1
+  poll: 0
+  ignore_errors: true
+  when: reboot 

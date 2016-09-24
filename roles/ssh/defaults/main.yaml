@@ -1,0 +1,4 @@
+---
+ssh_ca_authority: 
+ssh_known_hosts: []
+ssh_additional_allowed_users: []

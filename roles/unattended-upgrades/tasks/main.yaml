@@ -1,0 +1,16 @@
+---
+- name: install unattended-upgrades
+  package:
+    name=unattended-upgrades
+    state=present
+
+- name: copy config
+  copy:
+    src="{{ item }}"
+    dest="/etc/apt/apt.conf.d/{{ item }}"
+    owner=root
+    group=root
+    mode=0644
+  with_items:
+    - 20auto-upgrades
+    - 50unattended-upgrades

@@ -1,0 +1,119 @@
+
+- name: Install common packages
+  package:
+    name="{{ item }}"
+    state=present
+  with_items: "{{ common_packages }}"
+  tags: common_packages
+
+- name: Remove undesired packages
+  package:
+    name="{{ item }}"
+    state=absent
+  with_items: "{{ common_remove_packages }}"
+  tags: common_packages
+
+- name: setting vim as default editor
+  file:
+    path=/etc/alternatives/editor
+    src=/usr/bin/vim.basic
+    state=link
+
+- name: adding bananapi locate service program
+  copy:
+    src=locate_banana_pi
+    dest=/usr/bin/locate_banana_pi
+    owner=root
+    group=root
+    mode=0755
+  when: "'banana-pi' in group_names"
+
+- name: adding bananapi locate service
+  copy:
+    src=locate.service
+    dest=/etc/systemd/system/locate.service
+    owner=root
+    group=root
+    mode=0644
+  notify: do daemon-reload
+  when: "'bananapi' in group_names"
+
+- name: checking if /etc/resolv.conf is a link to /run/resolvconf/resolv.conf
+  stat:
+    path=/etc/resolv.conf
+  register: sym
+  tags: resolvconf
+
+- name: removing /etc/resolv.conf file
+  file:
+    path=/etc/resolv.conf
+    state=absent
+  when: sym.stat.islnk is defined and sym.stat.islnk == False
+  tags: resolvconf
+
+- name: creating symlink for /etc/resolv.conf
+  file:
+    path=/etc/resolv.conf
+    state=link
+    src=/run/resolvconf/resolv.conf
+  tags: resolvconf
+
+- name: adding local nameservers to resolvconf
+  template:
+    src=base.j2
+    dest=/etc/resolvconf/resolv.conf.d/base
+    owner=root
+    group=root
+    mode=0444
+  register: resolvconf
+  tags: resolvconf
+
+- name: updating resolv.conf
+  command: resolvconf -u
+  when: resolvconf.changed
+  tags: resolvconf
+
+- name: checking timezone
+  template:
+    src=timezone.j2
+    dest=/etc/timezone
+    owner=root
+    group=root
+    mode=0444
+  notify: set timezone
+  tags: timezone
+ 
+- name: set default keyboard layout
+  template:
+    src=keyboard_layout.j2
+    dest=/etc/default/keyboard
+    owner=root
+    group=root
+    mode=0644
+  notify: reload input
+  tags: keyboard
+
+
+
+- name: creating common users
+  user:
+    name="{{ item.username }}"
+    password="{{ item.password }}"
+    shell="{{ item.shell }}"
+    state="{{ item.state }}"
+    update_password=always
+    groups="{{ item.groups }}"
+    append=yes
+  with_items: "{{ common_users }}"
+  tags:
+    - common_users
+
+- name: "configure authorized_keys for common users"
+  authorized_key:
+    user="{{ item.0.username }}"
+    key="{{ item.1 }}"
+  with_subelements:
+    - "{{common_users}}"
+    - ssh_authorized_keys
+  tags:
+    - common_users

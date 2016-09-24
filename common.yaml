@@ -1,0 +1,16 @@
+---
+- hosts: all
+  roles:
+    - timesyncd
+    - ssh
+    - common
+
+- hosts: all:!ceph-mons:!ceph-osds
+  roles:
+    - fail2ban
+    - rkhunter
+    - unattended-upgrades
+
+- hosts: docker
+  roles:
+    - docker

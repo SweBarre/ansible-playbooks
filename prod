@@ -1,0 +1,7 @@
+admin ansible_connection=local
+
+[raspberry-pi]
+admin
+
+[docker]
+admin
