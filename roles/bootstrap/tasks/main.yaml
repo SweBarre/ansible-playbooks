@@ -48,7 +48,7 @@
   when: "'banana-pi' in group_names"
 
 - name: Running specific Rasbian-PI setup tasks
-  include: bananapi.yaml
+  include: raspberrypi.yaml
   when: "'raspberry-pi' in group_names"
 
 - name: making sure public key fetch dir is created
