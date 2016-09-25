@@ -1,5 +1,5 @@
 admin ansible_connection=local
-docker-[01:03]
+docker-[01:03] ansible_python_interpreter=/usr/bin/python2.7
 
 [raspberry-pi]
 admin

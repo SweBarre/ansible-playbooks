@@ -1,3 +1,44 @@
+- name: installing resolvconf
+  package:
+    name=resolvconf
+    state=present
+  tags: resolvconf
+
+- name: checking if /etc/resolv.conf is a link to /run/resolvconf/resolv.conf
+  stat:
+    path=/etc/resolv.conf
+  register: sym
+  tags: resolvconf
+
+- name: removing /etc/resolv.conf file
+  file:
+    path=/etc/resolv.conf
+    state=absent
+  when: sym.stat.islnk is defined and sym.stat.islnk == False
+  tags: resolvconf
+
+- name: creating symlink for /etc/resolv.conf
+  file:
+    path=/etc/resolv.conf
+    state=link
+    src=/run/resolvconf/resolv.conf
+  tags: resolvconf
+
+- name: adding local nameservers to resolvconf
+  template:
+    src=base.j2
+    dest=/etc/resolvconf/resolv.conf.d/base
+    owner=root
+    group=root
+    mode=0444
+  register: resolvconf
+  tags: resolvconf
+
+
+- name: updating resolv.conf
+  command: resolvconf -u
+  when: resolvconf.changed
+  tags: resolvconf
 
 - name: Install common packages
   package:
@@ -38,40 +79,6 @@
   notify: do daemon-reload
   when: "'bananapi' in group_names"
 
-- name: checking if /etc/resolv.conf is a link to /run/resolvconf/resolv.conf
-  stat:
-    path=/etc/resolv.conf
-  register: sym
-  tags: resolvconf
-
-- name: removing /etc/resolv.conf file
-  file:
-    path=/etc/resolv.conf
-    state=absent
-  when: sym.stat.islnk is defined and sym.stat.islnk == False
-  tags: resolvconf
-
-- name: creating symlink for /etc/resolv.conf
-  file:
-    path=/etc/resolv.conf
-    state=link
-    src=/run/resolvconf/resolv.conf
-  tags: resolvconf
-
-- name: adding local nameservers to resolvconf
-  template:
-    src=base.j2
-    dest=/etc/resolvconf/resolv.conf.d/base
-    owner=root
-    group=root
-    mode=0444
-  register: resolvconf
-  tags: resolvconf
-
-- name: updating resolv.conf
-  command: resolvconf -u
-  when: resolvconf.changed
-  tags: resolvconf
 
 - name: checking timezone
   template:
