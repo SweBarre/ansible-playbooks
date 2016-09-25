@@ -93,6 +93,15 @@
   notify: reload input
   tags: keyboard
 
+- name: setting locales
+  template:
+    src=locale.gen.j2
+    dest=/etc/locale.gen
+    owner=root
+    group=root
+    mode=0444
+  notify: regenerate locales
+  tags: locales
 
 
 - name: creating common users

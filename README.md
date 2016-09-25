@@ -1,1 +1,3 @@
-# ansible-playbooks
+# My ansible-playbooks
+
+Assumes that you run Debian jessie

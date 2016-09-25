@@ -14,3 +14,6 @@
 
 - name: reload motd
   command: /usr/sbin/update-motd
+
+- name: regenerate locales
+  command: /usr/sbin/locale-gen
