@@ -79,3 +79,20 @@
     - macvlan
     - overlay
   when: modules.changed
+
+- name: copy custom docker.service
+  copy:
+    src=docker.service
+    dest=/etc/systemd/system/docker.service
+    owner=root
+    group=root
+    mode=0644
+  register: docker_service
+
+- name: reload systemd daemon
+  command: systemctl daemon-reload
+  when: docker_service.changed
+
+- name: restart docker.service
+  command: systemctl restart docker.service
+  when: docker_service.changed
