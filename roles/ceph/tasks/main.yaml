@@ -1,0 +1,84 @@
+---
+
+- name: Create ceph system user
+  user:
+    name=ceph
+    state=present
+    home=/var/lib/ceph
+    shell=/bin/bash
+    createhome=yes
+
+- name: Securing ceph home directory
+  file:
+    path=/var/lib/ceph
+    state=directory
+    group=ceph
+    owner=ceph
+    mode=0750
+
+- name: Create /var/lib/ceph/.ssh
+  file:
+    path=/var/lib/ceph/.ssh
+    state=directory
+    owner=ceph
+    group=ceph
+    mode=0750
+
+- name: copying ceph authorized key
+  authorized_key:
+    user=ceph
+    key="{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
+
+- name: Adding ceph sudo rule
+  template:
+    src=ceph_sudo_rule.j2
+    dest=/etc/sudoers.d/ceph
+    owner=root
+    group=root
+    mome: Explicitly allow ceph ssh user
+  user:
+    name=ceph
+    groups=sshusers
+    append=yes
+
+- name: creating /etc/hosts
+  template:
+    src=hosts.j2
+    dest=/etc/hosts
+    owner=root
+    group=root
+    mode=0444
+  tags: ceph_install
+    
+- name: making sure /etc/ceph exists
+  file:
+    path=/etc/ceph
+    state=directory
+    owner=root
+    group=adm
+    mode=0550
+  tags: ceph_install
+
+- name: checking if ceph is in modules-load.d
+  template:
+    src=kernelmodule_ceph.conf.j2
+    dest=/etc/modules-load.d/ceph.conf
+    owner=root
+    group=root
+    mode=0444
+  notify: load ceph kernel module
+  tags: ceph_install
+de=0440
+
+- name: check is ceph-mon.service exists
+  stat:
+    path=/lib/systemd/system/ceph-mon.service
+  register: ceph_mon
+
+- name: Enable the ceph-mon.service
+  service:
+    name=ceph-mon.service
+    enabled=yes
+  when: ceph_mon.stat.exists and 'ceph-mons' in group_names
+
+

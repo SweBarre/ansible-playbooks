@@ -1,10 +1,32 @@
 admin ansible_connection=local
 docker-[01:04] ansible_python_interpreter=/usr/bin/python2.7
+mon-[1:3] ansible_python_interpreter=/usr/bin/python2.7
+osd-[11:13] ansible_python_interpreter=/usr/bin/python2.7
+osd-[21:23] ansible_python_interpreter=/usr/bin/python2.7
+osd-[31:33] ansible_python_interpreter=/usr/bin/python2.7
 
 [raspberry-pi]
 admin
 docker-[01:04]
 
+[banana-pi]
+mon-[1:3]
+osd-[11:13]
+osd-[21:23]
+osd-[31:33]
+
 [docker]
 admin
 docker-[01:04]
+
+[ceph-mons]
+mon-[1:3]
+
+[ceph-osds]
+osd-[11:13]
+osd-[21:23]
+osd-[31:33]
+
+[ceph:children]
+ceph-osds
+ceph-mons
