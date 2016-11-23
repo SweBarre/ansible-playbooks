@@ -35,7 +35,8 @@
     dest=/etc/sudoers.d/ceph
     owner=root
     group=root
-    mome: Explicitly allow ceph ssh user
+
+- name: Explicitly allow ceph ssh user
   user:
     name=ceph
     groups=sshusers
@@ -68,7 +69,6 @@
     mode=0444
   notify: load ceph kernel module
   tags: ceph_install
-de=0440
 
 - name: check is ceph-mon.service exists
   stat:

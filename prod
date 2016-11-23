@@ -27,6 +27,10 @@ osd-[11:13]
 osd-[21:23]
 osd-[31:33]
 
-[ceph:children]
+[ceph-admin]
+admin
+
+[ceph-cluster:children]
+ceph-admin
 ceph-osds
 ceph-mons
