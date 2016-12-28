@@ -16,7 +16,6 @@ osd-[21:23]
 osd-[31:33]
 
 [docker]
-admin
 docker-[01:04]
 
 [ceph-mons]
@@ -27,10 +26,22 @@ osd-[11:13]
 osd-[21:23]
 osd-[31:33]
 
-[ceph-admin]
+[ceph-clients]
 admin
+docker-01
 
 [ceph-cluster:children]
-ceph-admin
 ceph-osds
 ceph-mons
+
+[ceph-block-1]
+mon-1
+osd-[11:13]
+
+[ceph-block-2]
+mon-2
+osd-[21:23]
+
+[ceph-block-3]
+mon-3
+osd-[31:33]

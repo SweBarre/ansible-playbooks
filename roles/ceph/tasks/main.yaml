@@ -68,6 +68,7 @@
     group=root
     mode=0444
   notify: load ceph kernel module
+  when: "'ceph-cluster' in group_names"
   tags: ceph_install
 
 - name: check is ceph-mon.service exists
@@ -81,4 +82,33 @@
     enabled=yes
   when: ceph_mon.stat.exists and 'ceph-mons' in group_names
 
+- name: copy local repository signing key
+  copy:
+    src=rre.gpg
+    dest=/etc/apt/trusted.gpg.d/rre.gpg
+    owner=root
+    group=root
+    mode=0600
+  notify: apt-update
+  when: "'raspberry-pi' in group_names"
+
+- name: adding local repository
+  copy:
+    src=rre.list
+    dest=/etc/apt/sources.list.d/rre.list
+    owner=root
+    group=root
+    mode=0644
+  notify: apt-update
+  when: "'raspberry-pi' in group_names"
+
+- name: Set raspberry pi local repository
+  copy:
+    src=raspberrypi.pref
+    dest=/etc/apt/preferences.d/raspberrypi.pref
+    owner=root
+    group=root
+    mode=0644
+  notify: apt-update
+  when: "'raspberry-pi' in group_names"
 

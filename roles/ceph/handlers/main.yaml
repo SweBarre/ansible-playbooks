@@ -1,3 +1,6 @@
 ---
 - name: load ceph kernel module
   command: modprobe ceph
+
+- name: apt-update
+  command: apt-get update
