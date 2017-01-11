@@ -1,0 +1,31 @@
+Package: libraspberrypi-bin
+Pin: origin apu.rre.nu
+Pin-Priority: 610
+
+Package: libraspberrypi-dev
+Pin: origin apu.rre.nu
+Pin-Priority: 610
+
+Package: libraspberrypi-doc
+Pin: origin apu.rre.nu
+Pin-Priority: 610
+
+Package: libraspberrypi0
+Pin: origin apu.rre.nu
+Pin-Priority: 610
+
+Package: raspberrypi-bootloader
+Pin: origin apu.rre.nu
+Pin-Priority: 610
+
+Package: raspberrypi-kernel-headers
+Pin: origin apu.rre.nu
+Pin-Priority: 610
+
+Package: raspberrypi-kernel
+Pin: origin apu.rre.nu
+Pin-Priority: 610
+
+Package: raspberrypi-firmware
+Pin: origin apu.rre.nu
+Pin-Priority: 610

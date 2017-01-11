@@ -1,0 +1,9 @@
+---
+- hosts: ceph-cluster
+  tasks:
+    - name: gather facts for complete cluster
+      ping:
+
+- hosts: ceph-cluster, ceph-clients
+  roles:
+    - ceph
