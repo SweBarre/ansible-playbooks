@@ -28,7 +28,6 @@ osd-[31:33]
 
 [ceph-clients]
 admin
-docker-01
 
 [ceph-cluster:children]
 ceph-osds
